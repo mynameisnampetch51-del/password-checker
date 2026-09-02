@@ -1,69 +1,128 @@
-const LEVEL_META = {
-  weak: { label: 'อ่อน', bg: 'bg-accent-soft', text: 'text-accent-strong', ring: 'ring-accent', bar: 'bg-accent' },
-  medium: { label: 'พอใช้', bg: 'bg-warn-soft', text: 'text-warn-ink', ring: 'ring-warn', bar: 'bg-warn' },
-  strong: { label: 'แข็งแรง', bg: 'bg-good-soft', text: 'text-good-ink', ring: 'ring-good', bar: 'bg-good' },
-};
-const MAX_BAR_ENTROPY = 100;
+const GAUGE_MAX_BITS = 120;
+const GAUGE_CX = 120;
+const GAUGE_CY = 150;
+const GAUGE_R = 95;
+const GAUGE_HALF_SWEEP = 120; // degrees each side of straight-up
+
+const LEVEL_LABELS = { weak: 'อ่อน', medium: 'พอใช้', strong: 'แข็งแรง' };
 
 const input = document.querySelector('#PasswordInput');
 const toggleBtn = document.querySelector('#ToggleVisibility');
-const resultEl = document.querySelector('#Result');
+const gaugeSvg = document.querySelector('#Gauge');
+const bitsValueEl = document.querySelector('#BitsValue');
+const statusEl = document.querySelector('#StatusLabel');
+const NS = 'http://www.w3.org/2000/svg';
 
-function renderResult(evaluation) {
-  if (!evaluation.valid) {
-    resultEl.innerHTML = '';
-    return;
-  }
-
-  const meta = LEVEL_META[evaluation.level];
-  const barPct = Math.min(100, Math.round((evaluation.entropy / MAX_BAR_ENTROPY) * 100));
-
-  const card = document.createElement('div');
-  card.className = `bg-surface border border-line rounded-2xl shadow-sm p-5 ring-1 ${meta.ring}`;
-
-  const header = document.createElement('div');
-  header.className = 'flex items-center justify-between mb-3 gap-3';
-  header.innerHTML = `
-    <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold ${meta.bg} ${meta.text}">${meta.label}</span>
-    <div class="text-right shrink-0">
-      <div class="text-2xl font-display font-semibold">${evaluation.entropy}</div>
-      <div class="text-xs text-ink-muted">bits ของ entropy</div>
-    </div>
-  `;
-  card.appendChild(header);
-
-  const barTrack = document.createElement('div');
-  barTrack.className = 'h-2 rounded-full bg-surface-2 overflow-hidden mb-4';
-  barTrack.innerHTML = `<div class="h-full ${meta.bar}" style="width:${barPct}%"></div>`;
-  card.appendChild(barTrack);
-
-  const list = document.createElement('ul');
-  list.className = 'flex flex-col gap-2';
-  evaluation.checks.forEach((c) => {
-    const li = document.createElement('li');
-    li.className = `flex gap-2 text-sm px-3 py-2 rounded-lg ${c.triggered ? 'bg-surface-2' : 'bg-accent-soft'}`;
-    li.innerHTML = `
-      <span class="${c.triggered ? 'text-good' : 'text-accent-strong'} font-bold shrink-0">${c.triggered ? '✓' : '✕'}</span>
-      <span>
-        <span class="font-medium">${c.label}</span>
-        <span class="block text-ink-muted">${c.detail}</span>
-      </span>
-    `;
-    list.appendChild(li);
-  });
-  card.appendChild(list);
-
-  resultEl.innerHTML = '';
-  resultEl.appendChild(card);
+// angle convention: 0deg = straight up, positive = clockwise (matches SVG rotate())
+function bitsToAngle(bits) {
+  const clamped = Math.max(0, Math.min(GAUGE_MAX_BITS, bits));
+  return -GAUGE_HALF_SWEEP + (clamped / GAUGE_MAX_BITS) * (GAUGE_HALF_SWEEP * 2);
 }
 
-input.addEventListener('input', () => {
-  const evaluation = evaluatePassword(input.value);
-  renderResult(evaluation);
-});
+function polarToCartesian(cx, cy, r, angleDeg) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: cx + r * Math.sin(rad), y: cy - r * Math.cos(rad) };
+}
+
+function arcPath(cx, cy, r, startAngle, endAngle) {
+  const start = polarToCartesian(cx, cy, r, startAngle);
+  const end = polarToCartesian(cx, cy, r, endAngle);
+  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+  return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 1 ${end.x} ${end.y}`;
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function buildGauge() {
+  const zoneR = GAUGE_R;
+  const zones = [
+    { from: 0, to: LEVEL_THRESHOLDS.weak, color: 'var(--danger)' },
+    { from: LEVEL_THRESHOLDS.weak, to: LEVEL_THRESHOLDS.medium, color: 'var(--warn)' },
+    { from: LEVEL_THRESHOLDS.medium, to: GAUGE_MAX_BITS, color: 'var(--signal)' },
+  ];
+  zones.forEach((z) => {
+    const path = svgEl('path', {
+      class: 'zone',
+      d: arcPath(GAUGE_CX, GAUGE_CY, zoneR, bitsToAngle(z.from), bitsToAngle(z.to)),
+      stroke: z.color,
+      'stroke-width': 14,
+    });
+    gaugeSvg.appendChild(path);
+  });
+
+  for (let bits = 0; bits <= GAUGE_MAX_BITS; bits += 5) {
+    const isMajor = bits % 20 === 0;
+    const angle = bitsToAngle(bits);
+    const outer = polarToCartesian(GAUGE_CX, GAUGE_CY, zoneR - 9, angle);
+    const inner = polarToCartesian(GAUGE_CX, GAUGE_CY, zoneR - (isMajor ? 20 : 15), angle);
+    gaugeSvg.appendChild(svgEl('line', {
+      class: 'tick',
+      x1: outer.x, y1: outer.y, x2: inner.x, y2: inner.y,
+      'stroke-width': isMajor ? 2 : 1,
+    }));
+    if (isMajor) {
+      const labelPos = polarToCartesian(GAUGE_CX, GAUGE_CY, zoneR - 32, angle);
+      const label = svgEl('text', { class: 'tick-label', x: labelPos.x, y: labelPos.y + 4 });
+      label.textContent = bits;
+      gaugeSvg.appendChild(label);
+    }
+  }
+
+  const needle = svgEl('g', { class: 'needle', style: `transform-origin:${GAUGE_CX}px ${GAUGE_CY}px` });
+  needle.appendChild(svgEl('line', { x1: GAUGE_CX, y1: GAUGE_CY, x2: GAUGE_CX, y2: GAUGE_CY - 78 }));
+  needle.appendChild(svgEl('circle', { cx: GAUGE_CX, cy: GAUGE_CY, r: 7 }));
+  gaugeSvg.appendChild(needle);
+
+  return needle;
+}
+
+const needleEl = buildGauge();
+
+function setNeedle(bits) {
+  needleEl.style.transform = `rotate(${bitsToAngle(bits)}deg)`;
+}
+
+function renderEmpty() {
+  setNeedle(0);
+  bitsValueEl.textContent = '—';
+  statusEl.textContent = 'พิมพ์รหัสผ่านเพื่อเริ่ม';
+  statusEl.className = 'status status--empty';
+}
+
+function renderResult(evaluation) {
+  setNeedle(evaluation.entropy);
+  bitsValueEl.textContent = evaluation.entropy;
+  statusEl.textContent = LEVEL_LABELS[evaluation.level];
+  statusEl.className = `status status--${evaluation.level}`;
+}
+
+function runCheck() {
+  const value = input.value;
+  if (!value) {
+    renderEmpty();
+    return;
+  }
+  renderResult(evaluatePassword(value));
+}
+
+input.addEventListener('input', runCheck);
 
 toggleBtn.addEventListener('click', () => {
   const showing = input.type === 'text';
   input.type = showing ? 'password' : 'text';
   toggleBtn.textContent = showing ? 'แสดง' : 'ซ่อน';
 });
+
+document.querySelectorAll('.chip').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    input.value = chip.dataset.value;
+    input.focus();
+    runCheck();
+  });
+});
+
+renderEmpty();

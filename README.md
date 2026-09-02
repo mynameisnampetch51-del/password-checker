@@ -30,7 +30,8 @@ entropy (bits) = ความยาว × log2(ขนาด character set ที
 - แยก logic วิเคราะห์เป็น pure function ใน `rules.js` — เทส/แก้ไขทีละข้อได้อิสระ (แนวทางเดียวกับ `phishing-detector/rules.js`)
 - ไม่พึ่ง library ตรวจ pattern คีย์บอร์ด/entropy — implement เอง
 - ไม่มี `localStorage` หรือ network call ใดๆ — **ไม่บันทึกหรือส่งรหัสผ่านไปที่ไหนเลย** เป็นเจตนาการออกแบบ ไม่ใช่แค่ไม่ได้ทำ
-- Styling ด้วย Tailwind CDN ธีมเดียวกับ `phishing-detector/`, `to-do/`, `cube-net/`
+- ดีไซน์แยกจากโปรเจกต์อื่นในพอร์ตโดยตั้งใจ (ปกติใช้ธีมแดง/ขาวร่วมกับ `phishing-detector/`, `to-do/`, `cube-net/`) — หน้านี้ใช้พื้นน้ำเงินเข้ม + IBM Plex Sans Thai/Mono และวาด**มาตรวัดเข็มเดียวด้วย SVG ล้วน** (ไม่พึ่ง library กราฟ) แทนแถบ progress ทั่วไป เพราะ entropy เป็นค่าที่วัดได้บนสเกลจริงที่มีโซนชื่อกำกับ (อ่อน/พอใช้/แข็งแรง) — ตรงกับสิ่งที่หน้าปัดเข็มสื่อสารได้ดีกว่าแถบ
+- ขอบเขต 3 โซนสีบนหน้าปัดอ่านค่าจาก `LEVEL_THRESHOLDS` ใน `rules.js` โดยตรง ไม่ hardcode ซ้ำใน `app.js`
 
 ## ข้อจำกัด (พูดตรงๆ)
 

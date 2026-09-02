@@ -1,79 +1,280 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Password Strength Checker</title>
-  <style>
-    :root {
-      --bg: #FFFFFF; --surface: #FFFFFF; --surface-2: #FFF3F3;
-      --ink: #201415; --ink-muted: #8C6F70;
-      --line: #F3D9D9; --line-strong: #E7B9B9;
-      --accent: #D81E23; --accent-strong: #A9151A; --accent-soft: #FBD9D9;
-      --good: #2E9563; --good-soft: #DFF3E8; --good-ink: #1E6E48;
-      --warn: #B87A0A; --warn-soft: #FBF0D9; --warn-ink: #8A5C08;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #150C0C; --surface: #1F1414; --surface-2: #261818;
-        --ink: #F5E9E9; --ink-muted: #B08C8C;
-        --line: #3A2424; --line-strong: #4A2E2E;
-        --accent: #FF4B4F; --accent-strong: #FF7276; --accent-soft: #3D1A1A;
-        --good: #4FCB92; --good-soft: #16362A; --good-ink: #8FE4BE;
-        --warn: #E3A73E; --warn-soft: #362A16; --warn-ink: #E3B368;
-      }
-    }
-  </style>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            bg: 'var(--bg)', surface: 'var(--surface)', 'surface-2': 'var(--surface-2)',
-            ink: 'var(--ink)', 'ink-muted': 'var(--ink-muted)',
-            line: 'var(--line)', 'line-strong': 'var(--line-strong)',
-            accent: 'var(--accent)', 'accent-strong': 'var(--accent-strong)', 'accent-soft': 'var(--accent-soft)',
-            good: 'var(--good)', 'good-soft': 'var(--good-soft)', 'good-ink': 'var(--good-ink)',
-            warn: 'var(--warn)', 'warn-soft': 'var(--warn-soft)', 'warn-ink': 'var(--warn-ink)',
-          },
-          fontFamily: {
-            display: ['Georgia', '"Iowan Old Style"', '"Times New Roman"', 'serif'],
-          },
-        },
-      },
-    };
-  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Strength Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #0B1524;
+    --panel: #101F35;
+    --field: #17304F;
+    --line: #24406A;
+    --ink: #E8F0FB;
+    --ink-dim: #8FA6C4;
+    --signal: #5BE28A;
+    --warn: #F2B23C;
+    --danger: #FF5A5F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans Thai", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 56px 20px 40px;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .hero h1 {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .hero p {
+    margin: 0;
+    color: var(--ink-dim);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 28px 24px 24px;
+    box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.6);
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--field);
+    padding: 16px 12px 12px;
+    margin-bottom: 32px;
+  }
+
+  .field-label {
+    position: absolute;
+    top: -9px;
+    left: 14px;
+    background: var(--panel);
+    padding: 0 6px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+
+  .field input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--signal);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .field input::placeholder {
+    color: var(--ink-dim);
+    font-family: "IBM Plex Sans Thai", sans-serif;
+  }
+
+  .field-toggle {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+
+  .field-toggle:hover {
+    color: var(--ink);
+    border-color: var(--ink-dim);
+  }
+
+  .gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .gauge {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+  }
+
+  .gauge .tick {
+    stroke: var(--ink-dim);
+    opacity: 0.5;
+  }
+
+  .gauge .tick-label {
+    fill: var(--ink-dim);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    text-anchor: middle;
+  }
+
+  .gauge .zone {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .needle {
+    transition: transform 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+
+  .needle line {
+    stroke: var(--ink);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .needle circle {
+    fill: var(--panel);
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .needle { transition: none; }
+  }
+
+  .readout {
+    margin-top: -18px;
+    text-align: center;
+  }
+
+  .readout .bits {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .readout .bits-unit {
+    font-size: 14px;
+    color: var(--ink-dim);
+    margin-left: 4px;
+  }
+
+  .readout .status {
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .status--empty { color: var(--ink-dim); font-weight: 400; }
+  .status--weak { color: var(--danger); }
+  .status--medium { color: var(--warn); }
+  .status--strong { color: var(--signal); }
+
+  .no-store {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-top: 20px;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+  }
+
+  .chips-label {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-dim);
+    margin-bottom: 4px;
+  }
+
+  .chip {
+    background: var(--field);
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .chip:hover {
+    color: var(--ink);
+    border-color: var(--ink-dim);
+  }
+
+  input:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+</style>
 </head>
-<body class="bg-bg text-ink antialiased min-h-screen">
-  <div class="max-w-xl mx-auto px-5 py-10">
-    <header class="mb-6">
-      <h1 class="font-display text-2xl font-semibold mb-1">Password Strength Checker</h1>
-      <p class="text-sm text-ink-muted">
-        พิมพ์รหัสผ่านเพื่อดูความแข็งแรงแบบเรียลไทม์ — ประเมินจาก entropy จริง ไม่ใช่แค่นับความยาว
-        ทำงานในเบราว์เซอร์ล้วน ไม่มีการส่งหรือบันทึกรหัสผ่านไปที่ไหนเลย
-      </p>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>Password Strength Checker</h1>
+      <p>พิมพ์รหัสผ่านเพื่อดูว่ามันเดายากแค่ไหนจริง ๆ — วัดจาก entropy ไม่ใช่แค่กฎ "ต้องมีตัวเลข/สัญลักษณ์"</p>
     </header>
 
-    <div class="bg-surface border border-line rounded-2xl shadow-sm p-5 mb-6">
-      <div class="flex gap-2 mb-1">
-        <input
-          id="PasswordInput"
-          type="password"
-          autocomplete="off"
-          placeholder="พิมพ์รหัสผ่านตรงนี้"
-          class="flex-1 text-[15px] px-3 py-2 rounded-lg border border-line-strong bg-bg text-ink focus:outline-none focus:ring-2 focus:ring-accent-strong"
-        >
-        <button
-          id="ToggleVisibility"
-          type="button"
-          class="px-4 py-2 rounded-lg border border-line-strong bg-surface-2 text-sm font-semibold whitespace-nowrap"
-        >แสดง</button>
+    <div class="panel">
+      <div class="field">
+        <span class="field-label">รหัสผ่านที่ต้องการทดสอบ</span>
+        <input id="PasswordInput" type="text" autocomplete="off" spellcheck="false" placeholder="พิมพ์ตรงนี้">
+        <button id="ToggleVisibility" class="field-toggle" type="button">ซ่อน</button>
       </div>
-      <p class="text-xs text-ink-muted">ไม่ถูกบันทึกหรือส่งไปไหน — ประมวลผลใน JavaScript บนเครื่องคุณเท่านั้น</p>
+
+      <div class="gauge-wrap">
+        <svg id="Gauge" class="gauge" viewBox="0 0 240 205"></svg>
+        <div class="readout">
+          <span id="BitsValue" class="bits">—</span><span class="bits-unit"></span>
+          <div id="StatusLabel" class="status status--empty">พิมพ์รหัสผ่านเพื่อเริ่ม</div>
+        </div>
+      </div>
+
+      <p class="no-store">ไม่ถูกบันทึกหรือส่งไปไหน — ประมวลผลใน JavaScript บนเครื่องคุณเท่านั้น</p>
     </div>
 
-    <div id="Result"></div>
+    <div class="chips">
+      <span class="chips-label">ลองดู</span>
+      <button class="chip" type="button" data-value="123456">123456</button>
+      <button class="chip" type="button" data-value="qwertyuiop">qwertyuiop</button>
+      <button class="chip" type="button" data-value="Tr0ub4dor&amp;3">Tr0ub4dor&3</button>
+      <button class="chip" type="button" data-value="correct horse battery staple">correct horse battery staple</button>
+    </div>
   </div>
 
   <script src="rules.js"></script>

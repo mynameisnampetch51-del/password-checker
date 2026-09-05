@@ -8,9 +8,15 @@ const LEVEL_LABELS = { weak: 'อ่อน', medium: 'พอใช้', strong: 
 
 const input = document.querySelector('#PasswordInput');
 const toggleBtn = document.querySelector('#ToggleVisibility');
+const copyBtn = document.querySelector('#CopyButton');
 const gaugeSvg = document.querySelector('#Gauge');
 const bitsValueEl = document.querySelector('#BitsValue');
 const statusEl = document.querySelector('#StatusLabel');
+const lengthSlider = document.querySelector('#GenLength');
+const lengthValueEl = document.querySelector('#LengthValue');
+const generateBtn = document.querySelector('#GenerateButton');
+const generatorWarningEl = document.querySelector('#GeneratorWarning');
+const toggleChips = document.querySelectorAll('.toggle-chip');
 const NS = 'http://www.w3.org/2000/svg';
 
 // angle convention: 0deg = straight up, positive = clockwise (matches SVG rotate())
@@ -123,6 +129,50 @@ document.querySelectorAll('.chip').forEach((chip) => {
     input.focus();
     runCheck();
   });
+});
+
+copyBtn.addEventListener('click', async () => {
+  if (!input.value) return;
+  try {
+    await navigator.clipboard.writeText(input.value);
+    const original = copyBtn.textContent;
+    copyBtn.textContent = 'คัดลอกแล้ว';
+    setTimeout(() => { copyBtn.textContent = original; }, 1500);
+  } catch (err) {
+    copyBtn.textContent = 'คัดลอกไม่สำเร็จ';
+    setTimeout(() => { copyBtn.textContent = 'คัดลอก'; }, 1500);
+  }
+});
+
+lengthSlider.addEventListener('input', () => {
+  lengthValueEl.textContent = lengthSlider.value;
+});
+
+toggleChips.forEach((chip) => {
+  chip.addEventListener('click', () => {
+    const pressed = chip.getAttribute('aria-pressed') === 'true';
+    chip.setAttribute('aria-pressed', String(!pressed));
+  });
+});
+
+function activeCharsets() {
+  const options = {};
+  toggleChips.forEach((chip) => {
+    options[chip.dataset.charset] = chip.getAttribute('aria-pressed') === 'true';
+  });
+  return options;
+}
+
+generateBtn.addEventListener('click', () => {
+  const options = activeCharsets();
+  const password = generatePassword(Number(lengthSlider.value), options);
+  if (!password) {
+    generatorWarningEl.textContent = 'เลือกอย่างน้อย 1 ประเภทตัวอักษร';
+    return;
+  }
+  generatorWarningEl.textContent = '';
+  input.value = password;
+  runCheck();
 });
 
 renderEmpty();

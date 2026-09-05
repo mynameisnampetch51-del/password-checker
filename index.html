@@ -119,81 +119,27 @@
     border-color: var(--ink-dim);
   }
 
-  .generator {
-    margin: -16px 0 32px;
-  }
-
-  .generator-row {
+  .topbar {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 24px;
     font-size: 13px;
+  }
+
+  .topbar-current {
     color: var(--ink-dim);
-    margin-bottom: 12px;
-  }
-
-  .generator-row input[type="range"] {
-    flex: 1;
-    accent-color: var(--signal);
-  }
-
-  .generator-row .length-value {
-    font-family: "IBM Plex Mono", monospace;
-    color: var(--ink);
-    width: 24px;
-    text-align: right;
-  }
-
-  .toggle-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-
-  .toggle-chip {
-    flex: 1;
-    min-width: 64px;
-    background: var(--field);
-    border: 1px solid var(--line);
-    color: var(--ink-dim);
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 13px;
-    padding: 8px 6px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  .toggle-chip[aria-pressed="true"] {
-    background: rgba(91, 226, 138, 0.12);
-    border-color: var(--signal);
-    color: var(--signal);
-  }
-
-  .btn-generate {
-    width: 100%;
-    background: var(--signal);
-    border: none;
-    border-radius: 10px;
-    color: #08210F;
-    font-family: inherit;
-    font-size: 14px;
     font-weight: 600;
-    padding: 12px;
-    cursor: pointer;
   }
 
-  .btn-generate:hover {
-    filter: brightness(1.05);
+  .topbar-link {
+    color: var(--signal);
+    font-weight: 600;
+    text-decoration: none;
   }
 
-  .generator-warning {
-    text-align: center;
-    font-size: 12px;
-    color: var(--danger);
-    min-height: 16px;
-    margin-top: 8px;
+  .topbar-link:hover {
+    text-decoration: underline;
   }
 
   .gauge-wrap {
@@ -322,31 +268,20 @@
 </head>
 <body>
   <div class="page">
+    <nav class="topbar">
+      <span class="topbar-current">ตรวจสอบ</span>
+      <a class="topbar-link" href="generator/">สุ่มรหัสผ่าน</a>
+    </nav>
+
     <header class="hero">
       <h1>Password Strength Checker</h1>
-      <p>สุ่มรหัสผ่านใหม่ หรือพิมพ์ของตัวเอง แล้วดูว่ามันเดายากแค่ไหนจริง ๆ</p>
+      <p>พิมพ์รหัสผ่านเพื่อดูว่ามันเดายากแค่ไหนจริง ๆ — วัดจาก entropy จริง ไม่ใช่แค่นับความยาว</p>
     </header>
 
     <div class="panel">
-      <div class="generator">
-        <div class="generator-row">
-          <span>ความยาว</span>
-          <input id="GenLength" type="range" min="8" max="64" value="16">
-          <span id="LengthValue" class="length-value">16</span>
-        </div>
-        <div class="toggle-chips">
-          <button class="toggle-chip" type="button" data-charset="upper" aria-pressed="true">A-Z</button>
-          <button class="toggle-chip" type="button" data-charset="lower" aria-pressed="true">a-z</button>
-          <button class="toggle-chip" type="button" data-charset="digits" aria-pressed="true">0-9</button>
-          <button class="toggle-chip" type="button" data-charset="symbols" aria-pressed="true">#$%</button>
-        </div>
-        <button id="GenerateButton" class="btn-generate" type="button">สุ่มรหัสผ่านใหม่</button>
-        <div id="GeneratorWarning" class="generator-warning"></div>
-      </div>
-
       <div class="field">
         <span class="field-label">รหัสผ่านที่ต้องการทดสอบ</span>
-        <input id="PasswordInput" type="text" autocomplete="off" spellcheck="false" placeholder="พิมพ์ตรงนี้ หรือสุ่มด้านบน">
+        <input id="PasswordInput" type="text" autocomplete="off" spellcheck="false" placeholder="พิมพ์ตรงนี้ หรือไปสุ่มที่ด้านบน">
         <button id="CopyButton" class="field-toggle" type="button">คัดลอก</button>
         <button id="ToggleVisibility" class="field-toggle" type="button">ซ่อน</button>
       </div>
@@ -372,7 +307,6 @@
   </div>
 
   <script src="rules.js"></script>
-  <script src="generator.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

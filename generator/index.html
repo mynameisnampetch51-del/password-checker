@@ -59,6 +59,29 @@
     line-height: 1.6;
   }
 
+  .topbar {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 24px;
+    font-size: 13px;
+  }
+
+  .topbar-current {
+    color: var(--steel-dim);
+    font-weight: 600;
+  }
+
+  .topbar-link {
+    color: var(--ember);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .topbar-link:hover {
+    text-decoration: underline;
+  }
+
   .panel {
     background: var(--panel);
     border: 1px solid var(--line);
@@ -262,6 +285,11 @@
 </head>
 <body>
   <div class="page">
+    <nav class="topbar">
+      <a class="topbar-link" href="../">ตรวจสอบ</a>
+      <span class="topbar-current">สุ่มรหัสผ่าน</span>
+    </nav>
+
     <header class="hero">
       <h1>รหัสผ่านใหม่ จากเตาหลอม</h1>
       <p>ตั้งค่าแล้วตี ได้รหัสผ่านสุ่มที่ปลอดภัยทันที</p>

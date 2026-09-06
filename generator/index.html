@@ -9,12 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ground: #0B1524;
-    --panel: #101F35;
-    --plate: #17304F;
+    --ground: #05162f;
+    --panel: #14305a;
+    --plate: #194984;
     --line: #24406A;
-    --signal: #5BE28A;
-    --signal-dim: #2F7A50;
+    --signal: #a6f72d;
+    --signal-dim: #7ab127;
     --ink: #E8F0FB;
     --ink-dim: #8FA6C4;
     --danger: #FF5A5F;
@@ -77,7 +77,7 @@
   }
 
   .topbar-link:hover {
-    text-decoration: underline;
+    text-decoration: dotted underline;
   }
 
   .panel {
@@ -225,21 +225,21 @@
     gap: 10px;
   }
 
-  .btn-forge {
+  .btn-start {
     width: 100%;
-    background: var(--signal);
-    border: none;
+    background:var(--signal-dim);
+    border:none;
     border-radius: 10px;
-    color: #08210F;
+    color:#17304F;
     font-family: inherit;
     font-weight: 700;
-    font-size: 16px;
-    padding: 13px;
+    font-size: 20px;
+    padding: 12px;
     cursor: pointer;
   }
 
-  .btn-forge:hover { filter: brightness(1.08); }
-  .btn-forge:active { transform: translateY(1px); }
+  .btn-start:hover { filter: brightness(1.27); }
+  .btn-start:active { transform: translateY(1px); }
 
   .btn-copy {
     width: 100%;
@@ -288,8 +288,8 @@
     </nav>
 
     <header class="hero">
-      <h1>รหัสผ่านใหม่ จากเตาหลอม</h1>
-      <p>ตั้งค่าแล้วตี ได้รหัสผ่านสุ่มที่ปลอดภัยทันที</p>
+      <h1>รหัสผ่านใหม่ที่ปลอดภัย</h1>
+      <p>ตั้งค่าแล้วเริ่ม ได้รหัสผ่านสุ่มที่ปลอดภัยทันที</p>
     </header>
 
     <div class="panel">
@@ -315,17 +315,16 @@
       </div>
 
       <div class="plate-wrap">
-        <div id="Plate" class="plate"><span class="placeholder">กดตีเพื่อเริ่ม</span></div>
+        <div id="Plate" class="plate"><span class="placeholder">กด Start เพื่อเริ่ม</span></div>
       </div>
 
       <div class="actions">
-        <button id="ForgeButton" class="btn-forge" type="button">ตี!</button>
+        <button id="StartBtton" class="btn-start" type="button">Start</button>
         <button id="CopyButton" class="btn-copy" type="button">คัดลอก</button>
       </div>
 
       <div id="Warning" class="warning"></div>
 
-      <p class="no-store">ไม่ถูกบันทึกหรือส่งไปไหน — ประมวลผลใน JavaScript บนเครื่องคุณเท่านั้น</p>
     </div>
   </div>
 

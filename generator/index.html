@@ -107,13 +107,25 @@
   .row input[type="range"] {
     flex: 1;
     accent-color: var(--signal);
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .row input[type="range"]::-webkit-slider-runnable-track {
     height: 4px;
+    border-radius: 2px;
+  }
+
+  .row input[type="range"]::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
   }
 
   .row input[type="range"]::-webkit-slider-thumb {
     width: 16px;
     height: 16px;
     border-radius: 4px;
+    margin-top: -6px;
   }
 
   .length-value {

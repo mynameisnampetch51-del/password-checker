@@ -2,7 +2,7 @@ const lengthSlider = document.querySelector('#GenLength');
 const lengthValueEl = document.querySelector('#LengthValue');
 const switches = document.querySelectorAll('.switch');
 const plate = document.querySelector('#Plate');
-const forgeBtn = document.querySelector('#ForgeButton');
+const startBtn = document.querySelector('#StartButton');
 const copyBtn = document.querySelector('#CopyButton');
 const warningEl = document.querySelector('#Warning');
 
@@ -38,7 +38,7 @@ function stampPassword(password) {
   });
 }
 
-forgeBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', () => {
   const options = activeCharsets();
   const password = generatePassword(Number(lengthSlider.value), options);
   if (!password) {

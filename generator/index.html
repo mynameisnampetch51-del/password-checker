@@ -9,12 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ground: #05162f;
-    --panel: #14305a;
-    --plate: #194984;
+    --ground: #0B1524;
+    --panel: #101F35;
+    --plate: #17304F;
     --line: #24406A;
-    --signal: #a6f72d;
-    --signal-dim: #7ab127;
+    --signal: #5BE28A;
+    --signal-dim: #48ac6b;
     --ink: #E8F0FB;
     --ink-dim: #8FA6C4;
     --danger: #FF5A5F;
@@ -66,18 +66,23 @@
   }
 
   .topbar-current {
-    color: var(--ink-dim);
+    color: var(--signal);
     font-weight: 600;
+    color: var(--ground);
+    border: 1px solid var(--signal);
+    background: var(--signal);
+    border-radius: 8px;
+    padding: 4px 8px;
   }
 
   .topbar-link {
-    color: var(--signal);
+    color: var(--ink-dim);
     font-weight: 600;
     text-decoration: none;
   }
 
   .topbar-link:hover {
-    text-decoration: dotted underline;
+    text-decoration: underline;
   }
 
   .panel {
@@ -86,6 +91,7 @@
     border-radius: 18px;
     padding: 26px 24px 24px;
     box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.75);
+    opacity: 0.95;
   }
 
   .row {
@@ -227,10 +233,10 @@
 
   .btn-start {
     width: 100%;
-    background:var(--signal-dim);
+    background:var(--signal);
     border:none;
     border-radius: 10px;
-    color:#17304F;
+    color: var(--ground);
     font-family: inherit;
     font-weight: 700;
     font-size: 20px;

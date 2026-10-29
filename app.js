@@ -1,4 +1,4 @@
-const GAUGE_MAX_BITS = 120;
+const GAUGE_MAX_BITS = 100;
 const GAUGE_CX = 120;
 const GAUGE_CY = 150;
 const GAUGE_R = 95;
@@ -7,7 +7,6 @@ const GAUGE_HALF_SWEEP = 120; // degrees each side of straight-up
 const LEVEL_LABELS = { weak: 'อ่อน', medium: 'พอใช้', strong: 'แข็งแรง' };
 
 const input = document.querySelector('#PasswordInput');
-const toggleBtn = document.querySelector('#ToggleVisibility');
 const copyBtn = document.querySelector('#CopyButton');
 const gaugeSvg = document.querySelector('#Gauge');
 const bitsValueEl = document.querySelector('#BitsValue');
@@ -96,7 +95,7 @@ function renderEmpty() {
 
 function renderResult(evaluation) {
   setNeedle(evaluation.entropy);
-  bitsValueEl.textContent = evaluation.entropy;
+  bitsValueEl.textContent = Math.min(evaluation.entropy, GAUGE_MAX_BITS);
   statusEl.textContent = LEVEL_LABELS[evaluation.level];
   statusEl.className = `status status--${evaluation.level}`;
 }
@@ -111,12 +110,6 @@ function runCheck() {
 }
 
 input.addEventListener('input', runCheck);
-
-toggleBtn.addEventListener('click', () => {
-  const showing = input.type === 'text';
-  input.type = showing ? 'password' : 'text';
-  toggleBtn.textContent = showing ? 'แสดง' : 'ซ่อน';
-});
 
 document.querySelectorAll('.chip').forEach((chip) => {
   chip.addEventListener('click', () => {
